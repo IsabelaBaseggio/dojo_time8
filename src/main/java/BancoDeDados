@@ -1,0 +1,19 @@
+CREATE DATABASE banco_ninja;
+
+CREATE TABLE ninjas(
+	id_ninja SERIAL PRIMARY KEY,
+	nome VARCHAR(200),
+	vila VARCHAR(200),
+	status BOOLEAN,
+	nivel_experiencia VARCHAR(200)
+);
+
+CREATE TABLE missao(
+	id_missao SERIAL PRIMARY KEY,
+	id INT,
+	classificacao VARCHAR(200),
+	tipo_missao VARCHAR(200),
+	status BOOLEAN,
+	FOREIGN KEY (id)
+	REFERENCES ninjas (id_ninja)
+);
