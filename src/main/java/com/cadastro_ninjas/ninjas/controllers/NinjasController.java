@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/dojo")
@@ -35,8 +36,11 @@ public class NinjasController {
 
     @GetMapping("/ninja/{id}")
     public ResponseEntity listaNinjaUnico(@PathVariable(value = "id") long id){
-        NinjasModel ninja = ninjasRepository.findById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(ninja);
+        Optional<NinjasModel> ninja = ninjasRepository.findById(id);
+        if (ninja.isPresent()){
+            return ResponseEntity.status(HttpStatus.FOUND).body(ninja);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ninja não encontrado!");
     }
 
     @PostMapping("/ninja/add")
@@ -49,7 +53,14 @@ public class NinjasController {
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Erro ao adicionar ninja.");
     }
 
-//    @PutMapping("/ninja/atualizar")
-//    public void atualizaNinja(@Valid )
+    @PutMapping("/ninja/{id}/update")
+    public ResponseEntity atualizaNinja(@PathVariable(value = "id")long id, @Valid @RequestBody RequestNinja requestNinja){
+        NinjasModel ninja = new NinjasModel(requestNinja);
+        boolean atualizouNinja = ninjasService.updateNinja(ninja, id);
+        if(atualizouNinja){
+            return ResponseEntity.status(HttpStatus.CREATED).body("Ninja atualizado com sucesso!");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Erro ao atualizar ninja.");
+    }
 
 }
