@@ -40,9 +40,16 @@ public class NinjasController {
     }
 
     @PostMapping("/ninja/add")
-    public void adicionadaNinja(@Valid @RequestBody RequestNinja requestNinja){
+    public ResponseEntity adicionadaNinja(@Valid @RequestBody RequestNinja requestNinja){
         NinjasModel ninja = new NinjasModel(requestNinja);
-        ninjasService.addNinja(ninja);
+        boolean adicionouNinja = ninjasService.addNinja(ninja);
+        if(adicionouNinja){
+            return ResponseEntity.status(HttpStatus.CREATED).body("Ninja adicionado com sucesso!");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Erro ao adicionar ninja.");
     }
+
+//    @PutMapping("/ninja/atualizar")
+//    public void atualizaNinja(@Valid )
 
 }

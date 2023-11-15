@@ -8,15 +8,17 @@ import java.io.Serializable;
 @Entity
 @Table(name="ninjas")
 public class NinjasModel implements Serializable {
-    public static final int serialVersionID = 1;
 
-    @Id
+   @Id
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private String nome;
     private String vila;
     private Boolean status;
     private String nivel_experiencia;
+
+    public NinjasModel(){}
 
     public NinjasModel(RequestNinja requestNinja){
         this.nome = requestNinja.nome();
@@ -27,10 +29,6 @@ public class NinjasModel implements Serializable {
 
     public long getId() {
         return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getNome() {

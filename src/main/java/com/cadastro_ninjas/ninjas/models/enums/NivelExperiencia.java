@@ -9,12 +9,12 @@ public enum NivelExperiencia {
         nivelExperiencia = nivel;
     }
 
-//    public static NivelExperiencia fromString(String nivel) {
-//        for (NivelExperiencia ne : NivelExperiencia.values()) {
-//            if (ne.nivelExperiencia.equalsIgnoreCase(nivel)) {
-//                return ne;
-//            }
-//        }
-//        throw new IllegalArgumentException("Nível de experiência inválido: " + nivel);
-//    }
+    public static boolean nivelValido(String nivel) {
+        for (NivelExperiencia ne : NivelExperiencia.values()) {
+            if (ne.nivelExperiencia.equalsIgnoreCase(nivel)) {
+                return true;
+            }
+        }
+        throw new IllegalArgumentException("Nível de experiência inválido: " + nivel);
+    }
 }
