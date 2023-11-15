@@ -1,7 +1,7 @@
 CREATE DATABASE banco_ninja;
 
 CREATE TABLE ninjas(
-	id_ninja SERIAL PRIMARY KEY,
+	id SERIAL PRIMARY KEY,
 	nome VARCHAR(200),
 	vila VARCHAR(200),
 	status BOOLEAN,
@@ -9,11 +9,11 @@ CREATE TABLE ninjas(
 );
 
 CREATE TABLE missao(
-	id_missao SERIAL PRIMARY KEY,
-	id INT,
+	id SERIAL PRIMARY KEY,
+	id_ninja INT,
 	classificacao VARCHAR(200),
 	tipo_missao VARCHAR(200),
 	status BOOLEAN,
-	FOREIGN KEY (id)
-	REFERENCES ninjas (id_ninja)
+	FOREIGN KEY (id_ninja)
+	REFERENCES ninjas (id)
 );

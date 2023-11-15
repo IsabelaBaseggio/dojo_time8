@@ -1,11 +1,12 @@
-package com.cadastro_ninjas.ninjas.models;
+package com.cadastro_ninjas.ninjas.models.classes;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import com.cadastro_ninjas.ninjas.models.records.RequestNinja;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 
 @Entity
+@Table(name="ninjas")
 public class NinjasModel implements Serializable {
     public static final int serialVersionID = 1;
 
@@ -15,7 +16,14 @@ public class NinjasModel implements Serializable {
     private String nome;
     private String vila;
     private Boolean status;
-    private String nivel;
+    private String nivel_experiencia;
+
+    public NinjasModel(RequestNinja requestNinja){
+        this.nome = requestNinja.nome();
+        this.vila = requestNinja.vila();
+        this.status = requestNinja.status();
+        this.nivel_experiencia = requestNinja.nivel_experiencia();
+    }
 
     public long getId() {
         return id;
@@ -50,10 +58,10 @@ public class NinjasModel implements Serializable {
     }
 
     public String getNivel() {
-        return nivel;
+        return nivel_experiencia;
     }
 
     public void setNivel(String nivel) {
-        this.nivel = nivel;
+        this.nivel_experiencia = nivel;
     }
 }

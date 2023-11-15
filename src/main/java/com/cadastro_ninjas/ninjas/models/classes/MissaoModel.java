@@ -1,4 +1,4 @@
-package com.cadastro_ninjas.ninjas.models;
+package com.cadastro_ninjas.ninjas.models.classes;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
