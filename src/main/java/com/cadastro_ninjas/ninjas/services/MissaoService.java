@@ -63,8 +63,4 @@ public class MissaoService {
         }
     }
 
-//    public void deleteMissao(long id) {
-//        missaoRepository.deleteById(id);
-//    }
-
 }

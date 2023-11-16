@@ -16,6 +16,6 @@ public record RequestNinja(@NotBlank(message = "O campo 'nome' não pode estar v
 
     @Override
     public String nivel_experiencia() {
-        return nivel_experiencia;
+        return nivel_experiencia.toUpperCase();
     }
 }

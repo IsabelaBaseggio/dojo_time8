@@ -43,6 +43,12 @@ public class MissaoController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Missão não encontrada!");
     }
 
+    @GetMapping("/dificuldade/{dificuldade}")
+    public ResponseEntity listaMissoesPorDificuldade(@PathVariable String dificuldade){
+        List<MissaoModel> missoes = missaoRepository.findByDificuldade(dificuldade.toUpperCase());
+        return ResponseEntity.status(HttpStatus.OK).body(missoes);
+    }
+
     @PostMapping("/add")
     public ResponseEntity adicionaMissao(@Valid @RequestBody RequestMissao requestMissao) {
         MissaoModel missao = new MissaoModel(requestMissao);
@@ -63,9 +69,4 @@ public class MissaoController {
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Erro ao atualizar missão.");
     }
 
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> deleteMissao(@PathVariable long id) {
-//        missaoService.deleteMissao(id);
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//    }
 }

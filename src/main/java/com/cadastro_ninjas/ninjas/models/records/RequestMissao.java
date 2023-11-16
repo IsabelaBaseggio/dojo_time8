@@ -12,12 +12,12 @@ public record RequestMissao(@NotNull(message = "O campo 'id_ninja' não pode est
 
     @Override
     public String classificacao() {
-        return classificacao;
+        return classificacao.toUpperCase();
     }
 
     @Override
     public String tipo_missao() {
-        return tipo_missao;
+        return tipo_missao.toUpperCase();
     }
 
     @Override
