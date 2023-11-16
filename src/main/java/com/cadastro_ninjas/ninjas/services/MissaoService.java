@@ -1,6 +1,8 @@
 package com.cadastro_ninjas.ninjas.services;
 
 import com.cadastro_ninjas.ninjas.models.classes.MissaoModel;
+import com.cadastro_ninjas.ninjas.models.enums.MissaoDificuldade;
+import com.cadastro_ninjas.ninjas.models.enums.TipoMissao;
 import com.cadastro_ninjas.ninjas.repository.MissaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,21 +15,20 @@ public class MissaoService {
 
     private final MissaoRepository missaoRepository;
 
+
+
     @Autowired
     public MissaoService(MissaoRepository missaoRepository) {
         this.missaoRepository = missaoRepository;
     }
 
-    public List<MissaoModel> getAllMissoes() {
-        return missaoRepository.findAll();
-    }
 
-    public Optional<MissaoModel> getMissaoById(long id) {
-        return missaoRepository.findById(id);
-    }
-
-    public MissaoModel addMissao(MissaoModel missao) {
-        return missaoRepository.save(missao);
+    public boolean addMissao(MissaoModel missao) {
+        if(MissaoDificuldade.dificuldadeValida(missao.getClassificacao()) && TipoMissao.tipoValido(missao.getTipo_missao())){
+            missaoRepository.save(missao);
+            return true;
+        }
+        return false;
     }
 
     public MissaoModel updateMissao(long id, MissaoModel updatedMissao) {
@@ -35,7 +36,7 @@ public class MissaoService {
 
         if (existingMissao.isPresent()) {
             MissaoModel missao = existingMissao.get();
-            missao.setClassificao(updatedMissao.getClassificao());
+            missao.setClassificacao(updatedMissao.getClassificacao());
             missao.setTipo_missao(updatedMissao.getTipo_missao());
             missao.setStatus(updatedMissao.getStatus());
 

@@ -11,14 +11,14 @@ public class NinjasModel implements Serializable {
 
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+   private long id;
 
     private String nome;
     private String vila;
     private Boolean status;
     private String nivel_experiencia;
 
-    public NinjasModel(String naruto, String folha, boolean b, String genin){}
+    public NinjasModel(){}
 
     public NinjasModel(RequestNinja requestNinja){
         this.nome = requestNinja.nome();

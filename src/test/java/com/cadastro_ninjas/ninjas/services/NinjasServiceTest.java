@@ -1,4 +1,4 @@
-package com.cadastro_ninjas.ninjas;
+package com.cadastro_ninjas.ninjas.services;
 
 import com.cadastro_ninjas.ninjas.models.classes.NinjasModel;
 import com.cadastro_ninjas.ninjas.repository.NinjasRepository;

@@ -8,7 +8,7 @@ CREATE TABLE ninjas(
 	nivel_experiencia VARCHAR(200)
 );
 
-CREATE TABLE missao(
+CREATE TABLE missoes(
 	id SERIAL PRIMARY KEY,
 	id_ninja INT,
 	classificacao VARCHAR(200),
