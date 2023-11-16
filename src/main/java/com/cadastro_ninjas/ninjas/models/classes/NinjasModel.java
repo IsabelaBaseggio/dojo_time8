@@ -18,7 +18,7 @@ public class NinjasModel implements Serializable {
     private Boolean status;
     private String nivel_experiencia;
 
-    public NinjasModel(){}
+    public NinjasModel(String naruto, String folha, boolean b, String genin){}
 
     public NinjasModel(RequestNinja requestNinja){
         this.nome = requestNinja.nome();
