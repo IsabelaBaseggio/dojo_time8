@@ -45,9 +45,9 @@ public class MissaoService {
         Optional<MissaoModel> existingMissao = missaoRepository.findById(id);
         Optional<NinjasModel> ninjaOptional = ninjasRepository.findById(updatedMissao.getId_ninja());
 
-        if (existingMissao.isPresent()) {
+        if (existingMissao.isPresent() && ninjaOptional.isPresent()) {
             MissaoModel missao = existingMissao.get();
-            if(!MissaoDificuldade.dificuldadeValida(missao.getClassificacao()) || !TipoMissao.tipoValido(missao.getTipo_missao()) || !ninjaOptional.isPresent()){
+            if(!MissaoDificuldade.dificuldadeValida(updatedMissao.getClassificacao()) || !TipoMissao.tipoValido(updatedMissao.getTipo_missao())){
                 return false;
             } else {
                 missao.setId_ninja(updatedMissao.getId_ninja());
