@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "/dojo")
+@RequestMapping(value = "/dojo/ninja")
 public class NinjasController {
 
     private final NinjasService ninjasService;
@@ -28,22 +28,26 @@ public class NinjasController {
 
     @Autowired
     MissaoRepository missaoRepository;
-    @GetMapping("/ninjas")
+
+    // falta testar
+    @GetMapping
     public ResponseEntity listaNinjas (){
-        List<NinjasModel> ninjas = ninjasRepository.findAll();
+        List<NinjasModel> ninjas = ninjasService.listaNinjas();
         return ResponseEntity.status(HttpStatus.OK).body(ninjas);
     }
 
-    @GetMapping("/ninja/{id}")
+    // falta testar
+    @GetMapping("/{id}")
     public ResponseEntity listaNinjaUnico(@PathVariable(value = "id") long id){
-        Optional<NinjasModel> ninja = ninjasRepository.findById(id);
-        if (ninja.isPresent()){
+        try {
+            Optional<NinjasModel> ninja = ninjasService.buscaNinja(id);
             return ResponseEntity.status(HttpStatus.FOUND).body(ninja);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ninja não encontrado!");
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ninja não encontrado!");
     }
 
-    @PostMapping("/ninja/add")
+    @PostMapping("/add")
     public ResponseEntity adicionadaNinja(@Valid @RequestBody RequestNinja requestNinja){
         NinjasModel ninja = new NinjasModel(requestNinja);
         boolean adicionouNinja = ninjasService.addNinja(ninja);
@@ -53,7 +57,7 @@ public class NinjasController {
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Erro ao adicionar ninja.");
     }
 
-    @PutMapping("/ninja/{id}/update")
+    @PutMapping("/{id}/update")
     public ResponseEntity atualizaNinja(@PathVariable(value = "id")long id, @Valid @RequestBody RequestNinja requestNinja){
         NinjasModel ninja = new NinjasModel(requestNinja);
         boolean atualizouNinja = ninjasService.updateNinja(ninja, id);

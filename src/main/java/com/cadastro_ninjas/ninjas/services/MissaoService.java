@@ -38,9 +38,6 @@ public class MissaoService {
         return false;
     }
 
-    // ERRO AO FAZER VALIDAÇÃO DO CLASSIFICACAO, TIPO E SE ID_NINJA EXISTE
-    // ESTÁ SALVANDO VALORES DIFERENTES DO SETADOS NOS ENUMS E ATUALIZANDO ASSIM NO DB
-    // VERIFICAR IF DA VALIDAÇÕES DOS ENUMS E DO ID_NINJA TALVEZ ???
     public boolean updateMissao(long id, MissaoModel updatedMissao) {
         Optional<MissaoModel> existingMissao = missaoRepository.findById(id);
         Optional<NinjasModel> ninjaOptional = ninjasRepository.findById(updatedMissao.getId_ninja());

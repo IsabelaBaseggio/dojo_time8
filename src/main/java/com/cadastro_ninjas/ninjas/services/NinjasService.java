@@ -6,6 +6,7 @@ import com.cadastro_ninjas.ninjas.repository.NinjasRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -13,6 +14,19 @@ public class NinjasService {
 
     @Autowired
     NinjasRepository ninjasRepository;
+
+    public List<NinjasModel> listaNinjas(){
+        List<NinjasModel> ninjas = ninjasRepository.findAll();
+        return ninjas;
+    }
+
+    public Optional<NinjasModel> buscaNinja(long id){
+        Optional<NinjasModel> ninja = ninjasRepository.findById(id);
+        if(ninja.isPresent()){
+            return ninja;
+        }
+        throw new RuntimeException("Ninja não encontrado!");
+    }
     public boolean addNinja(NinjasModel ninja){
         if (NivelExperiencia.nivelValido(ninja.getNivel())) {
             ninjasRepository.save(ninja);
