@@ -30,6 +30,9 @@ public class NinjasService {
             ninjaExistente.setNome(novoNinja.getNome());
             ninjaExistente.setVila(novoNinja.getVila());
             ninjaExistente.setStatus(novoNinja.getStatus());
+            if (!NivelExperiencia.nivelValido(novoNinja.getNivel())) {
+                return false;
+            }
             ninjaExistente.setNivel(novoNinja.getNivel());
 
             ninjasRepository.save(ninjaExistente);

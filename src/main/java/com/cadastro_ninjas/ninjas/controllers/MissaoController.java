@@ -53,12 +53,16 @@ public class MissaoController {
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Erro ao adicionar missão.");
     }
 
-//    @PutMapping("/{id}")
-//    public ResponseEntity<MissaoModel> updateMissao(@PathVariable long id, @RequestBody MissaoModel updatedMissao) {
-//        MissaoModel missao = missaoService.updateMissao(id, updatedMissao);
-//        return missao != null ? new ResponseEntity<>(missao, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//    }
-//
+    @PutMapping("/{id}/update")
+    public ResponseEntity atualizaMissao(@PathVariable(value = "id") long id, @Valid @RequestBody RequestMissao requestMissao) {
+        MissaoModel missao = new MissaoModel(requestMissao);
+        boolean atualizouMissao = missaoService.updateMissao(id, missao);
+        if(atualizouMissao){
+            return ResponseEntity.status(HttpStatus.CREATED).body("Missão atualizada com sucesso!");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Erro ao atualizar missão.");
+    }
+
 //    @DeleteMapping("/{id}")
 //    public ResponseEntity<Void> deleteMissao(@PathVariable long id) {
 //        missaoService.deleteMissao(id);
