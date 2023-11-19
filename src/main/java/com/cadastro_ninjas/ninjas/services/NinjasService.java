@@ -1,7 +1,9 @@
 package com.cadastro_ninjas.ninjas.services;
 
+import com.cadastro_ninjas.ninjas.models.classes.MissaoModel;
 import com.cadastro_ninjas.ninjas.models.classes.NinjasModel;
 import com.cadastro_ninjas.ninjas.models.enums.NivelExperiencia;
+import com.cadastro_ninjas.ninjas.repository.MissaoRepository;
 import com.cadastro_ninjas.ninjas.repository.NinjasRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,9 @@ public class NinjasService {
     @Autowired
     NinjasRepository ninjasRepository;
 
+    @Autowired
+    MissaoRepository missaoRepository;
+
     public List<NinjasModel> listaNinjas(){
         List<NinjasModel> ninjas = ninjasRepository.findAll();
         return ninjas;
@@ -26,6 +31,15 @@ public class NinjasService {
             return ninja;
         }
         throw new RuntimeException("Ninja não encontrado!");
+    }
+
+    public List<MissaoModel> encontrarMissoesDoNinja(long idNinja){
+        Optional<NinjasModel> ninja = ninjasRepository.findById(idNinja);
+        if(ninja.isPresent()){
+            List<MissaoModel> missoes = missaoRepository.findAllByNinjaId(idNinja);
+            return missoes;
+        }
+        throw new RuntimeException("Ninja inexistente!");
     }
     public NinjasModel addNinja(NinjasModel ninja){
         if (NivelExperiencia.nivelValido(ninja.getNivel())) {

@@ -1,9 +1,11 @@
 package com.cadastro_ninjas.ninjas.controllers;
 
+import com.cadastro_ninjas.ninjas.models.classes.MissaoModel;
 import com.cadastro_ninjas.ninjas.models.classes.NinjasModel;
 import com.cadastro_ninjas.ninjas.models.records.RequestNinja;
 import com.cadastro_ninjas.ninjas.repository.MissaoRepository;
 import com.cadastro_ninjas.ninjas.repository.NinjasRepository;
+import com.cadastro_ninjas.ninjas.services.MissaoService;
 import com.cadastro_ninjas.ninjas.services.NinjasService;
 import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.validation.Valid;
@@ -43,6 +45,16 @@ public class NinjasController {
             Optional<NinjasModel> ninja = ninjasService.buscaNinja(id);
             return ResponseEntity.status(HttpStatus.FOUND).body(ninja);
         } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}/missoes")
+    public ResponseEntity listaMissoesDoNinja(@PathVariable(value = "id") long idNinja){
+        try{
+            List<MissaoModel> missoes = ninjasService.encontrarMissoesDoNinja(idNinja);
+            return ResponseEntity.status(HttpStatus.FOUND).body(missoes);
+        } catch (RuntimeException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }

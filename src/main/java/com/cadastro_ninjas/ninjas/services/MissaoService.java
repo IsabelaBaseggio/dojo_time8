@@ -27,25 +27,52 @@ public class MissaoService {
         this.missaoRepository = missaoRepository;
     }
 
-
-    public boolean addMissao(MissaoModel missao) {
-        Optional<NinjasModel> ninjaOptional = ninjasRepository.findById(missao.getId_ninja());
-
-        if(MissaoDificuldade.dificuldadeValida(missao.getClassificacao()) && TipoMissao.tipoValido(missao.getTipo_missao()) && ninjaOptional.isPresent()){
-            missaoRepository.save(missao);
-            return true;
-        }
-        return false;
+    public List<MissaoModel> listaMissoes(){
+        List<MissaoModel> missoes = missaoRepository.findAll();
+        return missoes;
     }
 
-    public boolean updateMissao(long id, MissaoModel updatedMissao) {
+    public Optional<MissaoModel> buscaMissao(long id){
+        Optional<MissaoModel> missao = missaoRepository.findById(id);
+        if(missao.isPresent()){
+            return missao;
+        }
+        throw new RuntimeException("Missão não encontrada!");
+    }
+
+    public List<MissaoModel> listaMissoesPorDificuldade(String dificuldade){
+        List<MissaoModel> missoes = missaoRepository.findByClassificacao(dificuldade.toUpperCase());
+        return missoes;
+    }
+
+    public List<MissaoModel> listaMissoesPorStatus(String status){
+        List<MissaoModel> missoes;
+        if (status.equalsIgnoreCase("concluida")){
+            return missoes = missaoRepository.findByStatus(true);
+        } else if (status.equalsIgnoreCase("em-andamento")) {
+            return missoes = missaoRepository.findByStatus(false);
+        } else {
+            throw new RuntimeException("Status inválido!");
+        }
+    }
+
+    public MissaoModel addMissao(MissaoModel missao) {
+        Optional<NinjasModel> ninjaOptional = ninjasRepository.findById(missao.getId_ninja());
+        if(MissaoDificuldade.dificuldadeValida(missao.getClassificacao()) && TipoMissao.tipoValido(missao.getTipo_missao()) && ninjaOptional.isPresent()){
+            missaoRepository.save(missao);
+            return missao;
+        }
+        throw new RuntimeException("Erro ao cadastrar missão!");
+    }
+
+    public MissaoModel updateMissao(long id, MissaoModel updatedMissao) {
         Optional<MissaoModel> existingMissao = missaoRepository.findById(id);
         Optional<NinjasModel> ninjaOptional = ninjasRepository.findById(updatedMissao.getId_ninja());
 
         if (existingMissao.isPresent() && ninjaOptional.isPresent()) {
             MissaoModel missao = existingMissao.get();
             if(!MissaoDificuldade.dificuldadeValida(updatedMissao.getClassificacao()) || !TipoMissao.tipoValido(updatedMissao.getTipo_missao())){
-                return false;
+                throw new RuntimeException("Dados inválidos!");
             } else {
                 missao.setId_ninja(updatedMissao.getId_ninja());
                 missao.setClassificacao(updatedMissao.getClassificacao());
@@ -53,10 +80,10 @@ public class MissaoService {
                 missao.setStatus(updatedMissao.getStatus());
 
                 missaoRepository.save(missao);
-                return true;
+                return missao;
             }
         } else {
-            return false;
+            throw new RuntimeException("Missão ou ninja inexistente!");
         }
     }
 

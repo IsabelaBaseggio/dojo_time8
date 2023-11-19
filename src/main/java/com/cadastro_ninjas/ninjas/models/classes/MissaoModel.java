@@ -12,6 +12,7 @@ public class MissaoModel implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     private long id_ninja;
 
     private String classificacao;

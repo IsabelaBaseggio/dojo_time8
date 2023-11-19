@@ -30,43 +30,56 @@ public class MissaoController {
 
     @GetMapping
     public ResponseEntity listaMissoes() {
-        List<MissaoModel> missoes = missaoRepository.findAll();
+        List<MissaoModel> missoes = missaoService.listaMissoes();
         return ResponseEntity.status(HttpStatus.OK).body(missoes);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity listaMissaoUnica(@PathVariable long id) {
-        Optional<MissaoModel> missao = missaoRepository.findById(id);
-        if (missao.isPresent()){
+        try {
+            Optional<MissaoModel> missao = missaoService.buscaMissao(id);
             return ResponseEntity.status(HttpStatus.FOUND).body(missao);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Missão não encontrada!");
     }
 
     @GetMapping("/dificuldade/{dificuldade}")
     public ResponseEntity listaMissoesPorDificuldade(@PathVariable String dificuldade){
-        List<MissaoModel> missoes = missaoRepository.findByDificuldade(dificuldade.toUpperCase());
+        List<MissaoModel> missoes = missaoService.listaMissoesPorDificuldade(dificuldade);
         return ResponseEntity.status(HttpStatus.OK).body(missoes);
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity listaMissoesPorStatus(@PathVariable String status){
+        try {
+            List<MissaoModel> missoes = missaoService.listaMissoesPorStatus(status);
+            return ResponseEntity.status(HttpStatus.OK).body(missoes);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @PostMapping("/add")
     public ResponseEntity adicionaMissao(@Valid @RequestBody RequestMissao requestMissao) {
-        MissaoModel missao = new MissaoModel(requestMissao);
-        boolean adicionouMissao = missaoService.addMissao(missao);
-        if (adicionouMissao){
+        try{
+            MissaoModel missao = new MissaoModel(requestMissao);
+            MissaoModel missaoCadastrada = missaoService.addMissao(missao);
             return ResponseEntity.status(HttpStatus.CREATED).body("Missão adicionada com sucesso!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Erro ao adicionar missão.");
     }
 
     @PutMapping("/{id}/update")
     public ResponseEntity atualizaMissao(@PathVariable(value = "id") long id, @Valid @RequestBody RequestMissao requestMissao) {
-        MissaoModel missao = new MissaoModel(requestMissao);
-        boolean atualizouMissao = missaoService.updateMissao(id, missao);
-        if(atualizouMissao){
+        try {
+            MissaoModel missao = new MissaoModel(requestMissao);
+            MissaoModel missaoAtualizada = missaoService.updateMissao(id, missao);
             return ResponseEntity.status(HttpStatus.CREATED).body("Missão atualizada com sucesso!");
+        }catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Erro ao atualizar missão.");
     }
 
 }
