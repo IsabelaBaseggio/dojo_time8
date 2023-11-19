@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class NinjasService {
@@ -20,28 +21,23 @@ public class NinjasService {
     @Autowired
     MissaoRepository missaoRepository;
 
-    public List<NinjasModel> listaNinjas(){
-        List<NinjasModel> ninjas = ninjasRepository.findAll();
-        return ninjas;
+    public List<NinjasModel> listaNinjas() {
+        return ninjasRepository.findAll().stream()
+                .collect(Collectors.toList());
     }
 
-    public Optional<NinjasModel> buscaNinja(long id){
-        Optional<NinjasModel> ninja = ninjasRepository.findById(id);
-        if(ninja.isPresent()){
-            return ninja;
-        }
-        throw new RuntimeException("Ninja não encontrado!");
+    public Optional<NinjasModel> buscaNinja(long id) {
+        return ninjasRepository.findById(id);
     }
 
-    public List<MissaoModel> encontrarMissoesDoNinja(long idNinja){
-        Optional<NinjasModel> ninja = ninjasRepository.findById(idNinja);
-        if(ninja.isPresent()){
-            List<MissaoModel> missoes = missaoRepository.findAllByNinjaId(idNinja);
-            return missoes;
-        }
-        throw new RuntimeException("Ninja inexistente!");
+    public List<MissaoModel> encontrarMissoesDoNinja(long idNinja) {
+        return ninjasRepository.findById(idNinja)
+                .map(ninja -> missaoRepository.findAllByNinjaId(ninja.getId()))
+                .orElseThrow(() -> new RuntimeException("Ninja inexistente!"));
     }
-    public NinjasModel addNinja(NinjasModel ninja){
+
+
+    public NinjasModel addNinja(NinjasModel ninja) {
         if (NivelExperiencia.nivelValido(ninja.getNivel())) {
             ninjasRepository.save(ninja);
             return ninja;
@@ -49,25 +45,19 @@ public class NinjasService {
         throw new RuntimeException("Erro ao cadastrar ninja!");
     }
 
-    public NinjasModel updateNinja(NinjasModel novoNinja, long id){
-        Optional<NinjasModel> ninjaOptional = ninjasRepository.findById(id);
+    public NinjasModel updateNinja(NinjasModel novoNinja, long id) {
+        return ninjasRepository.findById(id)
+                .map(ninjaExistente -> {
+                    ninjaExistente.setNome(novoNinja.getNome());
+                    ninjaExistente.setVila(novoNinja.getVila());
+                    ninjaExistente.setStatus(novoNinja.getStatus());
+                    if (!NivelExperiencia.nivelValido(novoNinja.getNivel())) {
+                        throw new RuntimeException("Nível de experiência inválido!");
+                    }
+                    ninjaExistente.setNivel(novoNinja.getNivel());
 
-        if (ninjaOptional.isPresent()) {
-            NinjasModel ninjaExistente = ninjaOptional.get();
-
-            ninjaExistente.setNome(novoNinja.getNome());
-            ninjaExistente.setVila(novoNinja.getVila());
-            ninjaExistente.setStatus(novoNinja.getStatus());
-            if (!NivelExperiencia.nivelValido(novoNinja.getNivel())) {
-                throw new RuntimeException("Nível de experiência inválido!");
-            }
-            ninjaExistente.setNivel(novoNinja.getNivel());
-
-            ninjasRepository.save(ninjaExistente);
-            return ninjaExistente;
-        } else {
-            throw new RuntimeException("Ninja inexistente!");
-        }
+                    return ninjasRepository.save(ninjaExistente);
+                })
+                .orElseThrow(() -> new RuntimeException("Ninja inexistente!"));
     }
-
 }
