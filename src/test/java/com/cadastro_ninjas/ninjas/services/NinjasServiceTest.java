@@ -1,33 +1,68 @@
 package com.cadastro_ninjas.ninjas.services;
 
+import com.cadastro_ninjas.ninjas.models.classes.MissaoModel;
 import com.cadastro_ninjas.ninjas.models.classes.NinjasModel;
-import com.cadastro_ninjas.ninjas.repository.NinjasRepository;
-import com.cadastro_ninjas.ninjas.services.NinjasService;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.*;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
+import java.util.List;
+import java.util.Optional;
 
-public class NinjasServiceTest {
+@SpringBootTest
+class NinjasServiceTest {
 
-    @InjectMocks
+    @Autowired
     private NinjasService ninjasService;
 
-    @Mock
-    private NinjasRepository ninjasRepository;
+    @Test
+    void testListaNinjas() {
+        // Realize alguma ação que pode adicionar ninjas ao repositório antes de chamar o serviço
+        // ...
 
+        List<NinjasModel> ninjas = ninjasService.listaNinjas();
+
+        assertNotNull(ninjas);
+        assertFalse(ninjas.isEmpty());
+    }
 
     @Test
-    public void testAddNinja() {
-        NinjasModel ninja = new NinjasModel("Naruto", "Folha", true, "Genin");
+    void testBuscaNinjaExistente() {
+        // Adicione um ninja ao repositório antes de chamar o serviço
+        // ...
 
-        when(ninjasRepository.save(Mockito.any(NinjasModel.class))).thenReturn(ninja);
+        long idNinjaExistente = 1L;
+        Optional<NinjasModel> ninjaOptional = ninjasService.buscaNinja(idNinjaExistente);
 
-        boolean result = ninjasService.addNinja(ninja);
+        assertTrue(ninjaOptional.isPresent());
+    }
 
-        assertTrue(result);
+    @Test
+    void testBuscaNinjaInexistente() {
+        long idNinjaInexistente = 999L;
+        Optional<NinjasModel> ninjaOptional = ninjasService.buscaNinja(idNinjaInexistente);
+
+        assertTrue(ninjaOptional.isEmpty());
+    }
+
+    @Test
+    void testEncontrarMissoesDoNinjaExistente() {
+        // Adicione um ninja e suas missões ao repositório antes de chamar o serviço
+        // ...
+
+        long idNinjaExistente = 1L;
+        List<MissaoModel> missoes = ninjasService.encontrarMissoesDoNinja(idNinjaExistente);
+
+        assertNotNull(missoes);
+    }
+
+    @Test
+    void testEncontrarMissoesDoNinjaInexistente() {
+        long idNinjaInexistente = 999L;
+
+        assertThrows(RuntimeException.class, () -> {
+            ninjasService.encontrarMissoesDoNinja(idNinjaInexistente);
+        });
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MissaoService {
@@ -20,45 +21,40 @@ public class MissaoService {
     @Autowired
     NinjasRepository ninjasRepository;
 
-
-
     @Autowired
     public MissaoService(MissaoRepository missaoRepository) {
         this.missaoRepository = missaoRepository;
     }
 
-    public List<MissaoModel> listaMissoes(){
-        List<MissaoModel> missoes = missaoRepository.findAll();
-        return missoes;
+    public List<MissaoModel> listaMissoes() {
+        return missaoRepository.findAll().stream()
+                .collect(Collectors.toList());
     }
 
-    public Optional<MissaoModel> buscaMissao(long id){
-        Optional<MissaoModel> missao = missaoRepository.findById(id);
-        if(missao.isPresent()){
-            return missao;
-        }
-        throw new RuntimeException("Missão não encontrada!");
+    public Optional<MissaoModel> buscaMissao(long id) {
+        return missaoRepository.findById(id);
     }
 
-    public List<MissaoModel> listaMissoesPorDificuldade(String dificuldade){
-        List<MissaoModel> missoes = missaoRepository.findByClassificacao(dificuldade.toUpperCase());
-        return missoes;
+    public List<MissaoModel> listaMissoesPorDificuldade(String dificuldade) {
+        return missaoRepository.findByClassificacao(dificuldade.toUpperCase()).stream()
+                .collect(Collectors.toList());
     }
 
-    public List<MissaoModel> listaMissoesPorStatus(String status){
-        List<MissaoModel> missoes;
-        if (status.equalsIgnoreCase("concluida")){
-            return missoes = missaoRepository.findByStatus(true);
-        } else if (status.equalsIgnoreCase("em-andamento")) {
-            return missoes = missaoRepository.findByStatus(false);
-        } else {
-            throw new RuntimeException("Status inválido!");
-        }
+    public List<MissaoModel> listaMissoesPorStatus(String status) {
+        return switch (status.toLowerCase()) {
+            case "concluida" -> missaoRepository.findByStatus(true).stream()
+                    .collect(Collectors.toList());
+            case "em-andamento" -> missaoRepository.findByStatus(false).stream()
+                    .collect(Collectors.toList());
+            default -> throw new RuntimeException("Status inválido!");
+        };
     }
 
     public MissaoModel addMissao(MissaoModel missao) {
         Optional<NinjasModel> ninjaOptional = ninjasRepository.findById(missao.getId_ninja());
-        if(MissaoDificuldade.dificuldadeValida(missao.getClassificacao()) && TipoMissao.tipoValido(missao.getTipo_missao()) && ninjaOptional.isPresent()){
+        if (MissaoDificuldade.dificuldadeValida(missao.getClassificacao()) &&
+                TipoMissao.tipoValido(missao.getTipo_missao()) &&
+                ninjaOptional.isPresent()) {
             missaoRepository.save(missao);
             return missao;
         }
@@ -66,25 +62,25 @@ public class MissaoService {
     }
 
     public MissaoModel updateMissao(long id, MissaoModel updatedMissao) {
-        Optional<MissaoModel> existingMissao = missaoRepository.findById(id);
-        Optional<NinjasModel> ninjaOptional = ninjasRepository.findById(updatedMissao.getId_ninja());
+        return missaoRepository.findById(id)
+                .map(existingMissao -> {
+                    Optional<NinjasModel> ninjaOptional = ninjasRepository.findById(updatedMissao.getId_ninja());
+                    if (ninjaOptional.isPresent()) {
+                        if (!MissaoDificuldade.dificuldadeValida(updatedMissao.getClassificacao()) ||
+                                !TipoMissao.tipoValido(updatedMissao.getTipo_missao())) {
+                            throw new RuntimeException("Dados inválidos!");
+                        } else {
+                            existingMissao.setId_ninja(updatedMissao.getId_ninja());
+                            existingMissao.setClassificacao(updatedMissao.getClassificacao());
+                            existingMissao.setTipo_missao(updatedMissao.getTipo_missao());
+                            existingMissao.setStatus(updatedMissao.getStatus());
 
-        if (existingMissao.isPresent() && ninjaOptional.isPresent()) {
-            MissaoModel missao = existingMissao.get();
-            if(!MissaoDificuldade.dificuldadeValida(updatedMissao.getClassificacao()) || !TipoMissao.tipoValido(updatedMissao.getTipo_missao())){
-                throw new RuntimeException("Dados inválidos!");
-            } else {
-                missao.setId_ninja(updatedMissao.getId_ninja());
-                missao.setClassificacao(updatedMissao.getClassificacao());
-                missao.setTipo_missao(updatedMissao.getTipo_missao());
-                missao.setStatus(updatedMissao.getStatus());
-
-                missaoRepository.save(missao);
-                return missao;
-            }
-        } else {
-            throw new RuntimeException("Missão ou ninja inexistente!");
-        }
+                            return missaoRepository.save(existingMissao);
+                        }
+                    } else {
+                        throw new RuntimeException("Ninja inexistente!");
+                    }
+                })
+                .orElseThrow(() -> new RuntimeException("Missão inexistente!"));
     }
-
 }

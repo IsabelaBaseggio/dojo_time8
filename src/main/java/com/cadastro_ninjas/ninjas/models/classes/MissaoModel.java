@@ -19,7 +19,7 @@ public class MissaoModel implements Serializable {
     private String tipo_missao;
     private Boolean status;
 
-    public MissaoModel(){}
+    public MissaoModel(long id, String s, String proteção, boolean b){}
 
     public MissaoModel(RequestMissao requestMissao){
         this.id_ninja = requestMissao.id_ninja();
