@@ -27,15 +27,15 @@ public class NinjasService {
         }
         throw new RuntimeException("Ninja não encontrado!");
     }
-    public boolean addNinja(NinjasModel ninja){
+    public NinjasModel addNinja(NinjasModel ninja){
         if (NivelExperiencia.nivelValido(ninja.getNivel())) {
             ninjasRepository.save(ninja);
-            return true;
+            return ninja;
         }
-        return false;
+        throw new RuntimeException("Erro ao cadastrar ninja!");
     }
 
-    public boolean updateNinja(NinjasModel novoNinja, long id){
+    public NinjasModel updateNinja(NinjasModel novoNinja, long id){
         Optional<NinjasModel> ninjaOptional = ninjasRepository.findById(id);
 
         if (ninjaOptional.isPresent()) {
@@ -45,14 +45,14 @@ public class NinjasService {
             ninjaExistente.setVila(novoNinja.getVila());
             ninjaExistente.setStatus(novoNinja.getStatus());
             if (!NivelExperiencia.nivelValido(novoNinja.getNivel())) {
-                return false;
+                throw new RuntimeException("Nível de experiência inválido!");
             }
             ninjaExistente.setNivel(novoNinja.getNivel());
 
             ninjasRepository.save(ninjaExistente);
-            return true;
+            return ninjaExistente;
         } else {
-            return false;
+            throw new RuntimeException("Ninja inexistente!");
         }
     }
 

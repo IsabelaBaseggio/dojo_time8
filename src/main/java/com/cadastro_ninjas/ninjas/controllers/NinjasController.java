@@ -43,28 +43,30 @@ public class NinjasController {
             Optional<NinjasModel> ninja = ninjasService.buscaNinja(id);
             return ResponseEntity.status(HttpStatus.FOUND).body(ninja);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ninja não encontrado!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
     @PostMapping("/add")
     public ResponseEntity adicionadaNinja(@Valid @RequestBody RequestNinja requestNinja){
-        NinjasModel ninja = new NinjasModel(requestNinja);
-        boolean adicionouNinja = ninjasService.addNinja(ninja);
-        if(adicionouNinja){
-            return ResponseEntity.status(HttpStatus.CREATED).body("Ninja adicionado com sucesso!");
+        try {
+            NinjasModel ninja = new NinjasModel(requestNinja);
+            NinjasModel ninjaCadastrado = ninjasService.addNinja(ninja);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Ninja cadastrado com sucesso!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Erro ao adicionar ninja.");
     }
 
     @PutMapping("/{id}/update")
     public ResponseEntity atualizaNinja(@PathVariable(value = "id")long id, @Valid @RequestBody RequestNinja requestNinja){
-        NinjasModel ninja = new NinjasModel(requestNinja);
-        boolean atualizouNinja = ninjasService.updateNinja(ninja, id);
-        if(atualizouNinja){
+        try {
+            NinjasModel ninja = new NinjasModel(requestNinja);
+            NinjasModel atualizouNinja = ninjasService.updateNinja(ninja, id);
             return ResponseEntity.status(HttpStatus.CREATED).body("Ninja atualizado com sucesso!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Erro ao atualizar ninja.");
     }
 
 }
