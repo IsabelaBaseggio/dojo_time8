@@ -3,6 +3,7 @@ package com.cadastro_ninjas.ninjas.services;
 import com.cadastro_ninjas.ninjas.models.classes.MissaoModel;
 import com.cadastro_ninjas.ninjas.models.classes.NinjasModel;
 import com.cadastro_ninjas.ninjas.models.enums.MissaoDificuldade;
+import com.cadastro_ninjas.ninjas.models.enums.NivelExperiencia;
 import com.cadastro_ninjas.ninjas.models.enums.TipoMissao;
 import com.cadastro_ninjas.ninjas.repository.MissaoRepository;
 import com.cadastro_ninjas.ninjas.repository.NinjasRepository;
@@ -11,11 +12,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MissaoService {
 
     private final MissaoRepository missaoRepository;
+
+    private final NinjasService ninjasService;
 
     @Autowired
     NinjasRepository ninjasRepository;
@@ -23,8 +27,9 @@ public class MissaoService {
 
 
     @Autowired
-    public MissaoService(MissaoRepository missaoRepository) {
+    public MissaoService(MissaoRepository missaoRepository, NinjasService ninjasService) {
         this.missaoRepository = missaoRepository;
+        this.ninjasService = ninjasService;
     }
 
     public List<MissaoModel> listaMissoes(){
@@ -54,6 +59,20 @@ public class MissaoService {
         } else {
             throw new RuntimeException("Status inválido!");
         }
+    }
+
+    public List<MissaoModel> listaMissoesResgateNinjasRankAlto() {
+        List<MissaoModel> missaoResgate = missaoRepository.findAllResgateMissions();
+
+        return missaoResgate.stream()
+                .filter(missao -> {
+                    String nivelNinja = ninjasService.buscaNinja(missao.getId_ninja())
+                            .orElseThrow(() -> new RuntimeException("Ninja não encontrado!"))
+                            .getNivel();
+                    return NivelExperiencia.JOUNIN.nivelExperiencia.equalsIgnoreCase(nivelNinja)
+                            || NivelExperiencia.KAGE.nivelExperiencia.equalsIgnoreCase(nivelNinja);
+                })
+                .collect(Collectors.toList());
     }
 
     public MissaoModel addMissao(MissaoModel missao) {

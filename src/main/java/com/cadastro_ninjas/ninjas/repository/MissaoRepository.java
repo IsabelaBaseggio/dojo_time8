@@ -19,4 +19,7 @@ public interface MissaoRepository extends JpaRepository<MissaoModel, Long> {
 
     @Query("SELECT m FROM MissaoModel m WHERE m.id_ninja = :ninjaId")
     List<MissaoModel> findAllByNinjaId(@Param("ninjaId") long id_ninja);
+
+    @Query("SELECT m FROM MissaoModel m WHERE m.tipo_missao = 'RESGATE'")
+    List<MissaoModel> findAllResgateMissions();
 }
